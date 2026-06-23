@@ -6,6 +6,7 @@ import { motion, useSpring, useTransform } from "framer-motion"
 interface MagneticButtonProps {
   children: React.ReactNode
   className?: string
+  style?: React.CSSProperties
   onClick?: () => void
   strength?: number
 }
@@ -13,6 +14,7 @@ interface MagneticButtonProps {
 export default function MagneticButton({
   children,
   className = "",
+  style,
   onClick,
   strength = 0.3,
 }: MagneticButtonProps) {
@@ -43,7 +45,7 @@ export default function MagneticButton({
   return (
     <motion.button
       ref={ref}
-      style={{ x, y }}
+      style={{ x, y, ...style }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}

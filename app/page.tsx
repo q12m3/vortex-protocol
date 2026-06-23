@@ -22,6 +22,7 @@ import FeaturesSection from "@/components/FeaturesSection"
 import StatsSection from "@/components/StatsSection"
 import TokenomicsSection from "@/components/TokenomicsSection"
 import Footer from "@/components/Footer"
+import OrderBanner from "@/components/OrderBanner"
 
 export const metadata: Metadata = {
   title: "Vortex Protocol — Liquid Liquidity Engine",
@@ -75,6 +76,7 @@ export default function HomePage() {
           <StatsSection />
           <TokenomicsSection />
         </main>
+        <OrderBanner />
         <Footer />
       </div>
     </>
