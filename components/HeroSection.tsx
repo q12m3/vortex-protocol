@@ -47,7 +47,7 @@ function TokenArtifact({ cursorX, cursorY }: { cursorX: number; cursorY: number 
     <motion.div
       ref={artifactRef}
       style={{ rotateX: tiltX, rotateY: tiltY, transformStyle: "preserve-3d" }}
-      className="relative w-[320px] h-[320px] lg:w-[420px] lg:h-[420px] flex items-center justify-center"
+      className="relative w-[240px] h-[240px] sm:w-[300px] sm:h-[300px] lg:w-[420px] lg:h-[420px] flex items-center justify-center"
     >
       {/* Outer slow-spin ring — conic gradient masked to ring */}
       <motion.div
@@ -218,9 +218,9 @@ export default function HeroSection() {
     >
       <motion.div
         style={{ opacity, y }}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20 lg:py-28"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 sm:py-20 lg:py-28"
       >
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
           {/* Left column */}
           <div className="flex flex-col gap-8">
             {/* Live badge */}
@@ -240,7 +240,7 @@ export default function HeroSection() {
             </motion.div>
 
             {/* H1 — split-text word-by-word stagger */}
-            <h1 className="text-6xl sm:text-7xl xl:text-8xl font-black tracking-tighter leading-[0.92] -mt-2">
+            <h1 className="text-5xl sm:text-6xl xl:text-8xl font-black tracking-tighter leading-[0.92] -mt-2">
               {HERO_WORDS.map((word, i) => (
                 <div key={i} className="overflow-hidden block">
                   <motion.span
@@ -318,7 +318,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 1.3, ease: [0.16, 1, 0.3, 1] }}
-              className="grid grid-cols-3 gap-4 pt-2"
+              className="grid grid-cols-3 gap-2 sm:gap-4 pt-2"
             >
               {MICRO_STATS.map((stat, i) => (
                 <div key={i} className="flex flex-col gap-1">
