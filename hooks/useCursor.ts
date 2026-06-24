@@ -12,6 +12,7 @@ export interface CursorPosition {
 export function useCursor(lerpFactor: number = 0.07): CursorPosition {
   const targetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
   const currentRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const renderedRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
   const rafRef = useRef<number>(0)
   const [position, setPosition] = useState<CursorPosition>({
     x: 0,
@@ -26,12 +27,19 @@ export function useCursor(lerpFactor: number = 0.07): CursorPosition {
     currentRef.current.y +=
       (targetRef.current.y - currentRef.current.y) * lerpFactor
 
-    setPosition({
-      x: currentRef.current.x,
-      y: currentRef.current.y,
-      rawX: targetRef.current.x,
-      rawY: targetRef.current.y,
-    })
+    const dx = Math.abs(currentRef.current.x - renderedRef.current.x)
+    const dy = Math.abs(currentRef.current.y - renderedRef.current.y)
+
+    if (dx > 0.1 || dy > 0.1) {
+      renderedRef.current.x = currentRef.current.x
+      renderedRef.current.y = currentRef.current.y
+      setPosition({
+        x: currentRef.current.x,
+        y: currentRef.current.y,
+        rawX: targetRef.current.x,
+        rawY: targetRef.current.y,
+      })
+    }
 
     rafRef.current = requestAnimationFrame(animate)
   }, [lerpFactor])

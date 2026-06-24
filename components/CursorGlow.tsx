@@ -1,8 +1,9 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useCursor } from "@/hooks/useCursor"
 
-export default function CursorGlow() {
+function CursorGlowInner() {
   const { x, y } = useCursor(0.07)
 
   return (
@@ -44,4 +45,16 @@ export default function CursorGlow() {
       />
     </>
   )
+}
+
+export default function CursorGlow() {
+  const [show, setShow] = useState(false)
+
+  useEffect(() => {
+    // Only show on devices that have a real pointer (desktop/mouse), not touch screens
+    setShow(window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+  }, [])
+
+  if (!show) return null
+  return <CursorGlowInner />
 }
