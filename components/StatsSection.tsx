@@ -141,7 +141,7 @@ const TX_POOL: Omit<Tx, "id">[] = [
 
 function TxFeed() {
   const [txs, setTxs] = useState<Tx[]>(
-    TX_POOL.slice(0, 5).map((t, i) => ({ ...t, id: i }))
+    TX_POOL.map((t, i) => ({ ...t, id: i }))
   )
   const counterRef = useRef(TX_POOL.length)
 
@@ -150,13 +150,16 @@ function TxFeed() {
     const id = setInterval(() => {
       const pool = TX_POOL[Math.floor(Math.random() * TX_POOL.length)]
       const next: Tx = { ...pool, id: counterRef.current++, ago: "just now" }
-      setTxs((prev) => [next, ...prev.slice(0, 6)])
+      setTxs((prev) => [next, ...prev.slice(0, 29)])
     }, 1400)
     return () => clearInterval(id)
   }, [])
 
   return (
-    <div className="flex flex-col gap-1.5 overflow-hidden">
+    <div
+      className="flex flex-col gap-1.5 overflow-y-auto h-[300px]"
+      style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.1) transparent" }}
+    >
       <AnimatePresence initial={false}>
         {txs.map((tx) => (
           <motion.div
