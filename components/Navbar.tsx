@@ -106,8 +106,8 @@ export default function Navbar() {
 
             {/* Right side: lang toggle + wallet + mobile hamburger */}
             <div className="flex items-center gap-2.5">
-              {/* Language toggle — desktop */}
-              <LangToggle className="hidden md:flex" />
+              {/* Language toggle — always visible */}
+              <LangToggle />
 
               {/* Wallet Button */}
               <div className="relative">
@@ -236,18 +236,6 @@ export default function Navbar() {
                 </motion.a>
               ))}
 
-              {/* Language toggle — mobile */}
-              <motion.div
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: T.navbar.links.length * 0.07 + 0.05, ease: [0.16, 1, 0.3, 1] }}
-                className="px-4 pt-3 mt-1 border-t border-white/[0.06]"
-              >
-                <p className="text-[11px] text-white/30 uppercase tracking-widest mb-2">
-                  {lang === "en" ? "Language" : "Язык"}
-                </p>
-                <LangToggle />
-              </motion.div>
             </div>
           </motion.div>
         )}
