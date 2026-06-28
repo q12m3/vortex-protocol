@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Space_Grotesk, Space_Mono } from "next/font/google"
+import { LanguageProvider } from "@/context/LanguageContext"
 import "./globals.css"
 
 const spaceGrotesk = Space_Grotesk({
@@ -37,7 +38,7 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${spaceMono.variable}`}
     >
       <body className="bg-[#030712] text-white antialiased font-sans overflow-x-hidden">
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   )

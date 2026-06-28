@@ -3,20 +3,29 @@
 import { useRef, useState } from "react"
 import { motion, useInView, useSpring } from "framer-motion"
 import { Lock, Flame, Gift, Coins, TrendingDown, Users } from "lucide-react"
+import { useLanguage } from "@/context/LanguageContext"
+import { useT } from "@/lib/translations"
 
 // ─── SVG Donut Chart ──────────────────────────────────────────────────────────
 
 const R = 70
 const C = 2 * Math.PI * R // ≈ 439.82
 
-const DONUT_SEGMENTS = [
-  { label: "Liquidity Pool", pct: 40, color: "#22d3ee", glow: "rgba(34,211,238,0.6)" },
-  { label: "Ecosystem Fund", pct: 25, color: "#6366f1", glow: "rgba(99,102,241,0.6)" },
-  { label: "Public Sale", pct: 20, color: "#a855f7", glow: "rgba(168,85,247,0.6)" },
-  { label: "Team & Advisors", pct: 15, color: "#f43f5e", glow: "rgba(244,63,94,0.6)" },
+const DONUT_SEGMENT_META = [
+  { pct: 40, color: "#22d3ee", glow: "rgba(34,211,238,0.6)" },
+  { pct: 25, color: "#6366f1", glow: "rgba(99,102,241,0.6)" },
+  { pct: 20, color: "#a855f7", glow: "rgba(168,85,247,0.6)" },
+  { pct: 15, color: "#f43f5e", glow: "rgba(244,63,94,0.6)" },
 ]
 
-function DonutChart() {
+interface DonutSegment {
+  pct: number
+  color: string
+  glow: string
+  label: string
+}
+
+function DonutChart({ segments }: { segments: DonutSegment[] }) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const ref = useRef<SVGSVGElement>(null)
   const inView = useInView(ref, { once: true, margin: "-60px" })
@@ -31,7 +40,7 @@ function DonutChart() {
         className="w-52 h-52 lg:w-60 lg:h-60"
       >
         <defs>
-          {DONUT_SEGMENTS.map((seg, i) => (
+          {segments.map((_, i) => (
             <filter key={i} id={`donut-glow-${i}`}>
               <feGaussianBlur stdDeviation="3" result="blur" />
               <feMerge>
@@ -53,7 +62,7 @@ function DonutChart() {
         />
 
         {/* Animated segments */}
-        {DONUT_SEGMENTS.map((seg, i) => {
+        {segments.map((seg, i) => {
           const startOffset = cumulative
           cumulative += seg.pct
           const dashLen = (seg.pct / 100) * C
@@ -61,7 +70,7 @@ function DonutChart() {
 
           return (
             <motion.circle
-              key={seg.label}
+              key={i}
               cx="100"
               cy="100"
               r={R}
@@ -106,7 +115,7 @@ function DonutChart() {
           dominantBaseline="middle"
           className="font-black"
           style={{
-            fill: hoveredIndex !== null ? DONUT_SEGMENTS[hoveredIndex].color : "#ffffff",
+            fill: hoveredIndex !== null ? segments[hoveredIndex].color : "#ffffff",
             fontSize: hoveredIndex !== null ? "26px" : "22px",
             fontFamily: "var(--font-mono)",
             fontWeight: 700,
@@ -114,7 +123,7 @@ function DonutChart() {
           }}
         >
           {hoveredIndex !== null
-            ? `${DONUT_SEGMENTS[hoveredIndex].pct}%`
+            ? `${segments[hoveredIndex].pct}%`
             : "100M"}
         </text>
         <text
@@ -130,15 +139,15 @@ function DonutChart() {
           }}
         >
           {hoveredIndex !== null
-            ? DONUT_SEGMENTS[hoveredIndex].label.toUpperCase()
+            ? segments[hoveredIndex].label.toUpperCase()
             : "VTX SUPPLY"}
         </text>
       </svg>
 
       {/* Legend grid */}
       <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 w-full max-w-xs">
-        {DONUT_SEGMENTS.map((seg, i) => (
-          <div key={seg.label} className="flex items-center gap-2">
+        {segments.map((seg, i) => (
+          <div key={i} className="flex items-center gap-2">
             <div
               className="w-2.5 h-2.5 rounded-full flex-shrink-0"
               style={{ background: seg.color, boxShadow: `0 0 6px ${seg.glow}` }}
@@ -173,15 +182,11 @@ interface TokenCardData {
   barGlow: string
 }
 
-const TOKEN_CARDS: TokenCardData[] = [
+const TOKEN_CARD_META = [
   {
     icon: Lock,
     value: "65",
     suffix: "%",
-    title: "Liquidity Locked",
-    subtitle: "3-year lock via Unicrypt",
-    description:
-      "65% of all liquidity positions are locked in Unicrypt vaults with a 3-year time-lock. No rug, no drain — verifiable on-chain in real-time.",
     progressPct: 65,
     gradient: "from-cyan-500 via-teal-400 to-cyan-600",
     border: "rgba(34,211,238,0.2)",
@@ -193,10 +198,6 @@ const TOKEN_CARDS: TokenCardData[] = [
     icon: Flame,
     value: "2.5",
     suffix: "%",
-    title: "Deflation Burn Rate",
-    subtitle: "Per quarterly epoch",
-    description:
-      "2.5% of the circulating VTX supply is permanently burned each quarter, sourced from 15% of all protocol swap fees. Total burned to date: 1.82M VTX.",
     progressPct: 25,
     gradient: "from-orange-500 via-rose-500 to-pink-600",
     border: "rgba(244,63,94,0.2)",
@@ -208,10 +209,6 @@ const TOKEN_CARDS: TokenCardData[] = [
     icon: Gift,
     value: "4.2",
     suffix: "% APR",
-    title: "Holder Reward Yield",
-    subtitle: "Auto-distributed weekly",
-    description:
-      "Hold a minimum of 1,000 VTX to earn 4.2% APR in USDC rewards. Funded by 40% of protocol fees — no staking required, rewards claimable anytime.",
     progressPct: 42,
     gradient: "from-purple-500 via-indigo-500 to-violet-600",
     border: "rgba(168,85,247,0.2)",
@@ -324,18 +321,36 @@ function TokenCard({ card, index }: TokenCardProps) {
 
 // ─── Supply Info Bar ──────────────────────────────────────────────────────────
 
-const SUPPLY_STATS = [
-  { icon: Coins, label: "Total Supply", value: "100,000,000", suffix: "VTX" },
-  { icon: TrendingDown, label: "Circulating Supply", value: "62,400,000", suffix: "VTX" },
-  { icon: Flame, label: "Total Burned", value: "1,820,000", suffix: "VTX" },
-  { icon: Users, label: "Max Wallet", value: "1%", suffix: "of supply" },
+const SUPPLY_STAT_META = [
+  { icon: Coins, value: "100,000,000" },
+  { icon: TrendingDown, value: "62,400,000" },
+  { icon: Flame, value: "1,820,000" },
+  { icon: Users, value: "1%" },
 ]
 
 // ─── Section ──────────────────────────────────────────────────────────────────
 
 export default function TokenomicsSection() {
+  const { lang } = useLanguage()
+  const T = useT(lang)
   const headingRef = useRef<HTMLDivElement>(null)
   const inView = useInView(headingRef, { once: true, margin: "-80px" })
+
+  const tokenCards: TokenCardData[] = TOKEN_CARD_META.map((meta, i) => ({
+    ...meta,
+    ...T.tokenomics.cards[i],
+  }))
+
+  const supplyStats = SUPPLY_STAT_META.map((meta, i) => ({
+    ...meta,
+    label: T.tokenomics.supplyStats[i].label,
+    suffix: T.tokenomics.supplyStats[i].suffix,
+  }))
+
+  const donutSegments = DONUT_SEGMENT_META.map((meta, i) => ({
+    ...meta,
+    label: T.tokenomics.donutSegments[i],
+  }))
 
   return (
     <section className="relative py-24 lg:py-36">
@@ -348,7 +363,7 @@ export default function TokenomicsSection() {
             transition={{ duration: 0.5 }}
             className="inline-block text-xs font-semibold tracking-widest uppercase text-purple-400 border border-purple-400/20 bg-purple-400/[0.06] px-3 py-1 rounded-full"
           >
-            VTX Token
+            {T.tokenomics.sectionLabel}
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 24 }}
@@ -356,9 +371,9 @@ export default function TokenomicsSection() {
             transition={{ duration: 0.6, delay: 0.08 }}
             className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter"
           >
-            <span className="text-white">Engineered for </span>
+            <span className="text-white">{T.tokenomics.h2a}</span>
             <span className="bg-gradient-to-tr from-purple-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-              long-term value
+              {T.tokenomics.h2b}
             </span>
           </motion.h2>
           <motion.p
@@ -367,15 +382,14 @@ export default function TokenomicsSection() {
             transition={{ duration: 0.6, delay: 0.16 }}
             className="text-base text-white/50 max-w-xl leading-relaxed"
           >
-            Deflationary supply, locked liquidity, and real yield — a tokenomics
-            model built to reward long-term protocol participants, not speculators.
+            {T.tokenomics.subtitle}
           </motion.p>
         </div>
 
         {/* Main grid — 3 cards + donut chart */}
         <div className="grid lg:grid-cols-3 gap-5 mb-12">
-          {TOKEN_CARDS.map((card, i) => (
-            <TokenCard key={card.title} card={card} index={i} />
+          {tokenCards.map((card, i) => (
+            <TokenCard key={i} card={card} index={i} />
           ))}
         </div>
 
@@ -384,11 +398,11 @@ export default function TokenomicsSection() {
           {/* Supply info bar — 3 cols */}
           <div className="lg:col-span-3">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {SUPPLY_STATS.map((stat, i) => {
+              {supplyStats.map((stat, i) => {
                 const Icon = stat.icon
                 return (
                   <motion.div
-                    key={stat.label}
+                    key={i}
                     initial={{ opacity: 0, y: 24 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -413,7 +427,7 @@ export default function TokenomicsSection() {
 
           {/* Donut chart — 2 cols */}
           <div className="lg:col-span-2 flex justify-center">
-            <DonutChart />
+            <DonutChart segments={donutSegments} />
           </div>
         </div>
       </div>

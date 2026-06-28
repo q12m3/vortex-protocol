@@ -3,30 +3,13 @@
 import { useRef, useState } from "react"
 import { motion, useInView, useSpring } from "framer-motion"
 import { Zap, GitMerge, ShieldCheck, BrainCircuit, ArrowRight } from "lucide-react"
+import { useLanguage } from "@/context/LanguageContext"
+import { useT } from "@/lib/translations"
 
-interface Feature {
-  icon: React.ElementType
-  badge: string
-  title: string
-  description: string
-  detail: string
-  color: {
-    border: string
-    glow: string
-    bg: string
-    icon: string
-    badge: string
-  }
-}
-
-const FEATURES: Feature[] = [
+const FEATURE_META = [
   {
     icon: Zap,
     badge: "< 0.8s Finality",
-    title: "Instant Swap Execution",
-    description:
-      "Sub-second cross-chain swaps powered by Vortex's proprietary intent-settlement layer. Zero slippage on orders under $500K. MEV-protected by default with Flashbots RPC integration.",
-    detail: "Supports 400+ token pairs across 14 EVM chains",
     color: {
       border: "rgba(34,211,238,0.15)",
       glow: "rgba(34,211,238,0.08)",
@@ -38,10 +21,6 @@ const FEATURES: Feature[] = [
   {
     icon: GitMerge,
     badge: "Up to 34% APR",
-    title: "Multi-Chain Yield Vaults",
-    description:
-      "Automatically route liquidity to the highest-yielding pools across Ethereum, Arbitrum, Optimism, Base, and Polygon. Neural rebalancing triggers every 4 hours based on real-time fee data.",
-    detail: "Compounding enabled — rewards auto-harvested daily",
     color: {
       border: "rgba(99,102,241,0.15)",
       glow: "rgba(99,102,241,0.08)",
@@ -53,10 +32,6 @@ const FEATURES: Feature[] = [
   {
     icon: ShieldCheck,
     badge: "AI-Powered",
-    title: "Neural Security Layer",
-    description:
-      "On-chain anomaly detection trained on 2.3M historical exploit patterns. Circuit breakers pause pools within 180ms of detecting rug-pull signatures, sandwich attacks, or oracle manipulation.",
-    detail: "$0 lost to exploits since mainnet launch in Q1 2024",
     color: {
       border: "rgba(168,85,247,0.15)",
       glow: "rgba(168,85,247,0.08)",
@@ -68,10 +43,6 @@ const FEATURES: Feature[] = [
   {
     icon: BrainCircuit,
     badge: "Adaptive AMM",
-    title: "Neural Liquidity Engine",
-    description:
-      "Dynamic fee tiers (0.01% – 1%) auto-selected per trade based on volatility regime, pool depth, and counterparty flow. LPs earn 40% more fees vs. static V3 implementations.",
-    detail: "Proprietary CLMM with tick-level price oracles",
     color: {
       border: "rgba(244,63,94,0.15)",
       glow: "rgba(244,63,94,0.08)",
@@ -82,6 +53,22 @@ const FEATURES: Feature[] = [
   },
 ]
 
+interface Feature {
+  icon: React.ElementType
+  badge: string
+  title: string
+  description: string
+  detail: string
+  learnMore: string
+  color: {
+    border: string
+    glow: string
+    bg: string
+    icon: string
+    badge: string
+  }
+}
+
 interface TiltCardProps {
   feature: Feature
   index: number
@@ -89,7 +76,7 @@ interface TiltCardProps {
 
 function TiltCard({ feature, index }: TiltCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const [tilt, setTilt] = useState({ x: 0, y: 0 })
+  const [, setTilt] = useState({ x: 0, y: 0 })
   const [hovered, setHovered] = useState(false)
 
   const rotateX = useSpring(0, { stiffness: 300, damping: 24 })
@@ -186,7 +173,7 @@ function TiltCard({ feature, index }: TiltCardProps) {
             animate={{ x: hovered ? 0 : 0 }}
             className="flex items-center gap-1.5"
           >
-            Learn more
+            {feature.learnMore}
             <motion.span animate={{ x: hovered ? 4 : 0 }} transition={{ duration: 0.2 }}>
               <ArrowRight className="w-3.5 h-3.5" />
             </motion.span>
@@ -198,8 +185,16 @@ function TiltCard({ feature, index }: TiltCardProps) {
 }
 
 export default function FeaturesSection() {
+  const { lang } = useLanguage()
+  const T = useT(lang)
   const headingRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(headingRef, { once: true, margin: "-80px" })
+
+  const features: Feature[] = FEATURE_META.map((meta, i) => ({
+    ...meta,
+    ...T.features.items[i],
+    learnMore: T.features.learnMore,
+  }))
 
   return (
     <section className="relative py-24 lg:py-36">
@@ -212,7 +207,7 @@ export default function FeaturesSection() {
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="inline-block text-xs font-semibold tracking-widest uppercase text-indigo-400 border border-indigo-400/20 bg-indigo-400/[0.06] px-3 py-1 rounded-full"
           >
-            Core Protocol
+            {T.features.sectionLabel}
           </motion.span>
 
           <motion.h2
@@ -221,12 +216,12 @@ export default function FeaturesSection() {
             transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
             className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter"
           >
-            <span className="text-white">Built for the </span>
+            <span className="text-white">{T.features.h2a}</span>
             <span className="bg-gradient-to-tr from-cyan-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent">
-              next generation
+              {T.features.h2b}
             </span>
             <br />
-            <span className="text-white">of DeFi</span>
+            <span className="text-white">{T.features.h2c}</span>
           </motion.h2>
 
           <motion.p
@@ -235,15 +230,14 @@ export default function FeaturesSection() {
             transition={{ duration: 0.6, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
             className="text-base text-white/50 max-w-xl leading-relaxed"
           >
-            Every primitive in the Vortex stack is engineered for maximum
-            capital efficiency, uncompromising security, and zero-friction UX.
+            {T.features.subtitle}
           </motion.p>
         </div>
 
         {/* 4-card grid */}
         <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-5">
-          {FEATURES.map((feature, i) => (
-            <TiltCard key={feature.title} feature={feature} index={i} />
+          {features.map((feature, i) => (
+            <TiltCard key={i} feature={feature} index={i} />
           ))}
         </div>
       </div>

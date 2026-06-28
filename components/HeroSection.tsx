@@ -11,6 +11,8 @@ import {
 import { ArrowRight, ExternalLink, TrendingUp, Users, Globe } from "lucide-react"
 import { useCursor } from "@/hooks/useCursor"
 import MagneticButton from "./MagneticButton"
+import { useLanguage } from "@/context/LanguageContext"
+import { useT } from "@/lib/translations"
 
 const HERO_WORDS = [
   { text: "VORTEX:", gradient: false },
@@ -19,11 +21,8 @@ const HERO_WORDS = [
   { text: "ENGINE", gradient: true },
 ]
 
-const MICRO_STATS = [
-  { icon: TrendingUp, label: "Total Value Locked", value: "$2.41B", color: "text-cyan-400" },
-  { icon: Users, label: "Protocol Holders", value: "186K+", color: "text-indigo-400" },
-  { icon: Globe, label: "Chains Supported", value: "14 Networks", color: "text-purple-400" },
-]
+const STAT_ICONS = [TrendingUp, Users, Globe]
+const STAT_COLORS = ["text-cyan-400", "text-indigo-400", "text-purple-400"]
 
 function TokenArtifact({ cursorX, cursorY }: { cursorX: number; cursorY: number }) {
   const artifactRef = useRef<HTMLDivElement>(null)
@@ -200,6 +199,8 @@ function TokenArtifact({ cursorX, cursorY }: { cursorX: number; cursorY: number 
 }
 
 export default function HeroSection() {
+  const { lang } = useLanguage()
+  const T = useT(lang)
   const sectionRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -235,7 +236,7 @@ export default function HeroSection() {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
               </span>
               <span className="text-xs font-medium text-white/70">
-                Live on 14 networks — $2.41B TVL
+                {T.hero.liveBadge}
               </span>
             </motion.div>
 
@@ -270,9 +271,7 @@ export default function HeroSection() {
               transition={{ duration: 0.7, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
               className="text-base sm:text-lg text-white/55 leading-relaxed max-w-lg font-light"
             >
-              The most capital-efficient AMM in DeFi. Concentrated liquidity
-              positions, neural rebalancing, and cross-chain atomic swaps — all
-              in one frictionless engine.
+              {T.hero.subtitle}
             </motion.p>
 
             {/* CTAs */}
@@ -299,7 +298,7 @@ export default function HeroSection() {
                 {/* Ping ripple ring */}
                 <span className="absolute inset-0 rounded-xl border border-indigo-400/40 animate-ping-slow" />
                 <span className="relative flex items-center gap-2">
-                  Launch App
+                  {T.hero.launchApp}
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                 </span>
               </MagneticButton>
@@ -308,7 +307,7 @@ export default function HeroSection() {
               <MagneticButton
                 className="group flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold text-white/80 hover:text-white border border-white/[0.1] hover:border-white/[0.2] bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-200 backdrop-blur-sm"
               >
-                Read Whitepaper
+                {T.hero.readWhitepaper}
                 <ExternalLink className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
               </MagneticButton>
             </motion.div>
@@ -320,19 +319,22 @@ export default function HeroSection() {
               transition={{ duration: 0.7, delay: 1.3, ease: [0.16, 1, 0.3, 1] }}
               className="grid grid-cols-3 gap-2 sm:gap-4 pt-2"
             >
-              {MICRO_STATS.map((stat, i) => (
-                <div key={i} className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5">
-                    <stat.icon className={`w-3.5 h-3.5 ${stat.color}`} />
-                    <span className={`font-mono text-xs font-bold ${stat.color}`}>
-                      {stat.value}
+              {T.hero.stats.map((stat, i) => {
+                const Icon = STAT_ICONS[i]
+                return (
+                  <div key={i} className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1.5">
+                      <Icon className={`w-3.5 h-3.5 ${STAT_COLORS[i]}`} />
+                      <span className={`font-mono text-xs font-bold ${STAT_COLORS[i]}`}>
+                        {stat.value}
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-white/40 leading-tight">
+                      {stat.label}
                     </span>
                   </div>
-                  <span className="text-[11px] text-white/40 leading-tight">
-                    {stat.label}
-                  </span>
-                </div>
-              ))}
+                )
+              })}
             </motion.div>
           </div>
 

@@ -4,6 +4,8 @@ import { useRef, useState, useEffect } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
 import { TrendingUp, Activity, Layers, ChevronUp, ChevronDown } from "lucide-react"
 import { useCountUp } from "@/hooks/useCountUp"
+import { useLanguage } from "@/context/LanguageContext"
+import { useT } from "@/lib/translations"
 
 // ─── Live Chart ────────────────────────────────────────────────────────────────
 
@@ -315,6 +317,8 @@ function StatCard({ icon: Icon, label, value, suffix, color, index, inView }: St
 // ─── Section ──────────────────────────────────────────────────────────────────
 
 export default function StatsSection() {
+  const { lang } = useLanguage()
+  const T = useT(lang)
   const sectionRef = useRef<HTMLDivElement>(null)
   const inView = useInView(sectionRef, { once: true, margin: "-80px" })
 
@@ -326,21 +330,21 @@ export default function StatsSection() {
   const STAT_CARDS = [
     {
       icon: TrendingUp,
-      label: "Total Value Locked",
+      label: T.stats.cards[0],
       value: `$${(2410000000 / 1e9).toFixed(2)}B`,
       suffix: "",
       color: { text: "text-cyan-400", glow: "rgba(34,211,238,0.12)", bg: "rgba(34,211,238,0.08)" },
     },
     {
       icon: Activity,
-      label: "24h Trading Volume",
+      label: T.stats.cards[1],
       value: `$${(847000000 / 1e6).toFixed(0)}M`,
       suffix: "",
       color: { text: "text-indigo-400", glow: "rgba(99,102,241,0.12)", bg: "rgba(99,102,241,0.08)" },
     },
     {
       icon: Layers,
-      label: "Total Transactions",
+      label: T.stats.cards[2],
       value: `4.82M`,
       suffix: "",
       color: { text: "text-purple-400", glow: "rgba(168,85,247,0.12)", bg: "rgba(168,85,247,0.08)" },
@@ -361,12 +365,12 @@ export default function StatsSection() {
           className="flex flex-col items-center text-center gap-4 mb-12"
         >
           <span className="inline-block text-xs font-semibold tracking-widest uppercase text-cyan-400 border border-cyan-400/20 bg-cyan-400/[0.06] px-3 py-1 rounded-full">
-            Live Protocol Data
+            {T.stats.sectionLabel}
           </span>
           <h2 className="text-4xl sm:text-5xl font-black tracking-tighter">
-            <span className="text-white">Numbers that </span>
+            <span className="text-white">{T.stats.h2a}</span>
             <span className="bg-gradient-to-tr from-cyan-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent">
-              don't lie
+              {T.stats.h2b}
             </span>
           </h2>
         </motion.div>
@@ -421,7 +425,7 @@ export default function StatsSection() {
             <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">
-                  Volume by Chain
+                  {T.stats.volumeByChain}
                 </span>
                 <span className="text-[10px] font-mono text-white/30">24h</span>
               </div>
@@ -432,11 +436,11 @@ export default function StatsSection() {
             <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl p-4 flex-1">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">
-                  Live Transactions
+                  {T.stats.liveTransactions}
                 </span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] font-mono text-emerald-400">Live</span>
+                  <span className="text-[10px] font-mono text-emerald-400">{T.stats.live}</span>
                 </div>
               </div>
               <TxFeed />

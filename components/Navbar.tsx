@@ -3,17 +3,31 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Zap, Loader2, CheckCircle2, Wallet, X, Menu } from "lucide-react"
+import { useLanguage } from "@/context/LanguageContext"
+import { useT } from "@/lib/translations"
 
 type WalletState = "disconnected" | "connecting" | "connected"
 
-const NAV_LINKS = [
-  { label: "Protocol", href: "#" },
-  { label: "Liquidity", href: "#" },
-  { label: "Governance", href: "#" },
-  { label: "Docs", href: "#" },
-]
+function LangToggle({ className }: { className?: string }) {
+  const { lang, toggle } = useLanguage()
+  return (
+    <motion.button
+      onClick={toggle}
+      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-xs font-bold transition-colors duration-150 hover:border-white/[0.18] ${className ?? ""}`}
+      whileHover={{ scale: 1.04 }}
+      whileTap={{ scale: 0.94 }}
+      aria-label="Toggle language"
+    >
+      <span className={lang === "en" ? "text-white" : "text-white/35"}>EN</span>
+      <span className="text-white/20 mx-0.5">/</span>
+      <span className={lang === "ru" ? "text-white" : "text-white/35"}>RU</span>
+    </motion.button>
+  )
+}
 
 export default function Navbar() {
+  const { lang } = useLanguage()
+  const T = useT(lang)
   const [scrolled, setScrolled] = useState(false)
   const [walletState, setWalletState] = useState<WalletState>("disconnected")
   const [address] = useState("0x71c...B9Af")
@@ -78,21 +92,24 @@ export default function Navbar() {
 
             {/* Desktop Nav Links */}
             <div className="hidden md:flex items-center gap-1">
-              {NAV_LINKS.map((link) => (
+              {T.navbar.links.map((label) => (
                 <a
-                  key={link.label}
-                  href={link.href}
+                  key={label}
+                  href="#"
                   className="relative px-4 py-2 text-sm font-medium text-white/60 hover:text-white transition-colors duration-200 group"
                 >
-                  {link.label}
+                  {label}
                   <span className="absolute bottom-1 left-4 right-4 h-[1px] bg-gradient-to-r from-cyan-400 to-indigo-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                 </a>
               ))}
             </div>
 
-            {/* Wallet Button + Mobile Toggle */}
-            <div className="flex items-center gap-3">
-              {/* Wallet Button with 3-state AnimatePresence */}
+            {/* Right side: lang toggle + wallet + mobile hamburger */}
+            <div className="flex items-center gap-2.5">
+              {/* Language toggle — desktop */}
+              <LangToggle className="hidden md:flex" />
+
+              {/* Wallet Button */}
               <div className="relative">
                 <motion.button
                   onClick={handleWalletClick}
@@ -125,7 +142,7 @@ export default function Navbar() {
                         className="flex items-center gap-2"
                       >
                         <Wallet className="w-3.5 h-3.5" />
-                        Connect Wallet
+                        {T.navbar.connectWallet}
                       </motion.span>
                     )}
                     {walletState === "connecting" && (
@@ -138,7 +155,7 @@ export default function Navbar() {
                         className="flex items-center gap-2"
                       >
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        Connecting...
+                        {T.navbar.connecting}
                       </motion.span>
                     )}
                     {walletState === "connected" && (
@@ -205,19 +222,32 @@ export default function Navbar() {
             className="fixed top-16 left-0 right-0 z-40 md:hidden bg-[#030712]/95 backdrop-blur-2xl border-b border-white/[0.06] px-4 pb-6"
           >
             <div className="pt-4 flex flex-col gap-1">
-              {NAV_LINKS.map((link, i) => (
+              {T.navbar.links.map((label, i) => (
                 <motion.a
-                  key={link.label}
-                  href={link.href}
+                  key={label}
+                  href="#"
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
                   onClick={() => setMobileOpen(false)}
                   className="px-4 py-3 rounded-lg text-white/70 hover:text-white hover:bg-white/[0.04] font-medium transition-colors duration-150"
                 >
-                  {link.label}
+                  {label}
                 </motion.a>
               ))}
+
+              {/* Language toggle — mobile */}
+              <motion.div
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: T.navbar.links.length * 0.07 + 0.05, ease: [0.16, 1, 0.3, 1] }}
+                className="px-4 pt-3 mt-1 border-t border-white/[0.06]"
+              >
+                <p className="text-[11px] text-white/30 uppercase tracking-widest mb-2">
+                  {lang === "en" ? "Language" : "Язык"}
+                </p>
+                <LangToggle />
+              </motion.div>
             </div>
           </motion.div>
         )}

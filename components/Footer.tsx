@@ -3,6 +3,8 @@
 import { motion } from "framer-motion"
 import { Zap } from "lucide-react"
 import Link from "next/link"
+import { useLanguage } from "@/context/LanguageContext"
+import { useT } from "@/lib/translations"
 
 // ─── Social icon SVG paths ────────────────────────────────────────────────────
 
@@ -36,22 +38,10 @@ const SOCIAL_ICONS = [
   },
 ]
 
-const FOOTER_LINKS = [
-  {
-    heading: "Protocol",
-    links: ["Swap", "Liquidity", "Yield Vaults", "Analytics", "Bridge"],
-  },
-  {
-    heading: "Developers",
-    links: ["Documentation", "SDK Reference", "Smart Contracts", "Bug Bounty", "Audits"],
-  },
-  {
-    heading: "Community",
-    links: ["Governance", "Forum", "Blog", "Brand Kit", "Careers"],
-  },
-]
-
 export default function Footer() {
+  const { lang } = useLanguage()
+  const T = useT(lang)
+
   return (
     <footer className="relative border-t border-white/[0.06] bg-white/[0.01] backdrop-blur-sm mt-12">
       {/* Top gradient separator */}
@@ -86,8 +76,7 @@ export default function Footer() {
             </motion.div>
 
             <p className="text-sm text-white/45 leading-relaxed max-w-xs">
-              The most capital-efficient concentrated liquidity protocol in DeFi.
-              Instant swaps, neural yield routing, and AI security — on 14 chains.
+              {T.footer.brandDesc}
             </p>
 
             {/* Social icons */}
@@ -122,7 +111,7 @@ export default function Footer() {
           </div>
 
           {/* Link columns */}
-          {FOOTER_LINKS.map((col) => (
+          {T.footer.columns.map((col) => (
             <div key={col.heading} className="flex flex-col gap-4">
               <h3 className="text-xs font-semibold tracking-widest uppercase text-white/40">
                 {col.heading}
@@ -149,9 +138,9 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/[0.05]">
           <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-white/30">
-            <span>© 2024 Vortex Protocol. All rights reserved.</span>
+            <span>{T.footer.copyright}</span>
             <div className="flex items-center gap-3">
-              {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((link) => (
+              {T.footer.legalLinks.map((link) => (
                 <Link
                   key={link}
                   href="/contact"
@@ -169,7 +158,7 @@ export default function Footer() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
-            <span className="text-emerald-400/80 font-medium">All systems operational</span>
+            <span className="text-emerald-400/80 font-medium">{T.footer.allSystems}</span>
           </div>
         </div>
       </div>
